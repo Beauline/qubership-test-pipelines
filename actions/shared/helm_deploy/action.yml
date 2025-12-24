@@ -159,7 +159,7 @@ runs:
         # ▶️ Replace slash in service branch
         service_branch="${{ inputs.service_branch }}"
         if echo "$service_branch" | grep -Eq '^[0-9a-f]{7,40}$'; then
-          service_branch_updated="${service_branch:0:11}"
+          service_branch_updated="git-${service_branch:0:7}"
         else
           service_branch_updated="${service_branch//\//_}"
         fi
