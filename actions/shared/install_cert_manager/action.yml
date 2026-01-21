@@ -1,0 +1,43 @@
+name: 'Install cert-manager Action'
+description: 'A GitHub Action to install cert-manager including creation of status checks, log collection, and test validation.'
+inputs:
+  namespace:
+    description: 'Kubernetes namespace for service installation'
+    required: true
+  version:
+    description: 'Cert-manager version to install'
+    required: false
+    default: 'v1.16.3'
+  create_entities:
+    description: 'Whether to create test issuer, certificate, and clusterissuer'
+    required: false
+    default: 'true'
+
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: |
+        echo "::group::Install cert-manager"
+        helm repo add jetstack https://charts.jetstack.io --force-update
+        helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager \
+          --create-namespace --version v1.16.3 --set prometheus.enabled=true   --set crds.enabled=true
+        echo "::endgroup::"
+        if [[ "${{ inputs.create_entities }}" == "true" ]]; then
+        echo "::group::Create cert-manager entities"
+        kubectl apply -f qubership-test-pipelines/resources/test-issuer.yaml
+        sleep 10s
+        kubectl apply -f qubership-test-pipelines/resources/test-certificate.yaml
+        sleep 10s
+        kubectl apply -f qubership-test-pipelines/resources/test-clusterissuer.yaml
+        echo "::endgroup::"
+        echo "::group::Get cert-manager resources"
+        kubectl get pods -n cert-manager
+        kubectl get secrets -n cert-manager
+        kubectl get certificates -A
+        echo "::endgroup::"
+        echo "::group:: Get clusterissuer"
+        kubectl get clusterissuer
+        kubectl get clusterissuer test-clusterissuer -o yaml
+        echo "::endgroup::"
+        fi

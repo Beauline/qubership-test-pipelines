@@ -1,0 +1,30 @@
+operator:
+  dockerImage: ghcr.io/netcracker/qubership-opensearch-operator:release-2025.2-1.14.4
+dashboards:
+  enabled: false
+opensearch:
+  master:
+    enabled: true
+    replicas: 1
+    persistence:
+      enabled: true
+      storageClass: "standard"
+  securityConfig:
+    authc:
+      basic:
+        username: "admin"
+        password: "admin"
+  tls:
+    enabled: false
+  config:
+    cluster.routing.allocation.disk.threshold_enabled: false
+  dockerImage: ghcr.io/netcracker/qubership-docker-opensearch:1.14.5
+  dockerTlsInitImage: ghcr.io/netcracker/qubership-opensearch-tls-init:1.14.5
+monitoring:
+  enabled: false
+dbaasAdapter:
+  enabled: false
+curator:
+  enabled: false
+  username: "admin"
+  password: "admin"

@@ -1,0 +1,9 @@
+jobs:
+  ## Clean install with Graylog and Fluentbit
+  - name: "Clean Graylog Fluentbit"
+    install_version: '${service_branch}'
+    template: "templates/logging-operator/logging_clean_graylog_fluentbit.yaml"
+    sequence: 'clean'
+    check_tests: 'true'
+    restricted: 'false'
+    artifact_name: "Clean_Graylog_Fluentbit"
